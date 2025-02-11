@@ -2,7 +2,7 @@ import { client } from "@/app/client";
 import { NFT, prepareContractCall } from "thirdweb";
 import { MediaRenderer, TransactionButton } from "thirdweb/react";
 import { NFT_CONTRACT, STAKING_CONTRACT } from "../utils/contracts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { approve } from "thirdweb/extensions/erc721";
 
 type OwnedNFTsProps = {
@@ -15,6 +15,10 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isApproved, setIsApproved] = useState(false);
 
+    useEffect(() => {
+        console.log({nft})
+    }, [nft])
+
     return (
         <div style={{ margin: "10px" }}>
             <MediaRenderer
@@ -24,7 +28,7 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
                     borderRadius: "10px",
                     marginBottom: "10px",
                     height: "160px",
-                    width: "100%"
+                    width: "160px"
                 }}
             />
             <p style={{ margin: "0 10px 10px 10px"}}>{nft.metadata.name}</p>
@@ -92,7 +96,7 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
                                 transaction={() => (
                                     approve({
                                         contract: NFT_CONTRACT,
-                                        to: STAKING_CONTRACT.address,
+                                        to: STAKING_CONTRACT.address as any,
                                         tokenId: nft.id
                                     })
                                 )}
@@ -103,7 +107,7 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
                             >Approve</TransactionButton>
                         ) : (
                             <TransactionButton
-                                transaction={() => (
+                                    transaction={() => (
                                     prepareContractCall({
                                         contract: STAKING_CONTRACT,
                                         method: "stake",

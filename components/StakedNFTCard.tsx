@@ -28,7 +28,7 @@ export const StakedNFTCard: React.FC<StakedNFTCardProps> = ({ tokenId, refetchSt
                     borderRadius: "10px",
                     marginBottom: "10px",
                     height: "160px",
-                    width: "100%"
+                    width: "160px"
                 }}
             />
             <p style={{ margin: "0 10px 10px 10px"}}>{nft?.metadata.name}</p>

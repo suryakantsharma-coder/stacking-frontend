@@ -228,3 +228,10 @@
     transform: rotate(0deg);
   }
 }
+
+
+html, body {
+  touch-action: pan-y;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
