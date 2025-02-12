@@ -2,7 +2,7 @@
 
 import { chain } from "@/app/chain";
 import { client } from "@/app/client";
-import { ConnectButton, TransactionButton, useActiveAccount, useReadContract } from "thirdweb/react";
+import { ConnectButton, useActiveAccount, useReadContract } from "thirdweb/react";
 import { StakeRewards } from "./StakeRewards";
 import { NFT_CONTRACT, STAKING_CONTRACT } from "../utils/contracts";
 import { NFT } from "thirdweb";
@@ -13,7 +13,6 @@ import { StakedNFTCard } from "./StakedNFTCard";
 import { IoIosInformationCircle } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import { sepolia } from "thirdweb/chains";
-import swal from 'sweetalert';
 
 
 export const Staking = () => {
@@ -122,7 +121,7 @@ export const Staking = () => {
                                 />
                             ))
                         ) : (
-                            <p>You own 0 NFTs</p>
+                            <p style={{margin : "20px"}}>You own 0 NFTs</p>
                         )}
                     </div>
                 </div>
