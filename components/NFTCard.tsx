@@ -4,6 +4,7 @@ import { MediaRenderer, TransactionButton } from "thirdweb/react";
 import { NFT_CONTRACT, STAKING_CONTRACT } from "../utils/contracts";
 import { useEffect, useState } from "react";
 import { approve } from "thirdweb/extensions/erc721";
+import swal from 'sweetalert';
 
 type OwnedNFTsProps = {
     nft: NFT;
@@ -17,7 +18,7 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
 
     useEffect(() => {
         console.log({nft})
-    }, [nft])
+    },[nft])
 
     return (
         <div style={{ margin: "10px" }}>
@@ -56,7 +57,8 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
                     backgroundColor: "rgba(0, 0, 0, 0.5)",
                     display: "flex",
                     justifyContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    zIndex : 100,
                 }}>
                     <div style={{
                         minWidth: "300px",
@@ -82,7 +84,7 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
                                 }}
                             >Close</button>
                         </div>
-                        <h3 style={{ margin: "10px 0" }}>You about to stake:</h3>
+                        <h3 style={{width: "100%", margin: "10px 0" }}>You're about to stake: #{(nft?.id?.toString())?.toString()}</h3>
                         <MediaRenderer
                             client={client}
                             src={nft.metadata.image}
@@ -114,8 +116,8 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
                                         params: [[nft.id]]
                                     })
                                 )}
-                                onTransactionConfirmed={() => {
-                                    alert("Staked!");
+                                    onTransactionConfirmed={() => {
+                                    swal("", "Staked!", "");
                                     setIsModalOpen(false);
                                     refetch();
                                     refecthStakedInfo();

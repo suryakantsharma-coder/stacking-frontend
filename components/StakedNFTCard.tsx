@@ -3,6 +3,8 @@ import { NFT_CONTRACT, STAKING_CONTRACT } from "../utils/contracts";
 import { getNFT } from "thirdweb/extensions/erc721";
 import { client } from "@/app/client";
 import { prepareContractCall } from "thirdweb";
+import swal from 'sweetalert';
+
 
 type StakedNFTCardProps = {
     tokenId: bigint;
@@ -43,7 +45,7 @@ export const StakedNFTCard: React.FC<StakedNFTCardProps> = ({ tokenId, refetchSt
                 onTransactionConfirmed={() => {
                     refetchOwnedNFTs();
                     refetchStakedInfo();
-                    alert("Withdrawn!");
+                    swal("","Withdrawn!","");
                 }}
                 style={{
                     border: "none",

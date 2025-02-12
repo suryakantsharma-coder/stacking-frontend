@@ -13,6 +13,8 @@ import { StakedNFTCard } from "./StakedNFTCard";
 import { IoIosInformationCircle } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import { sepolia } from "thirdweb/chains";
+import swal from 'sweetalert';
+
 
 export const Staking = () => {
     const account = useActiveAccount();
@@ -50,7 +52,6 @@ export const Staking = () => {
         }
     }, [account]);
 
-    console.log({account})
 
     const {
         data: stakedInfo,
@@ -85,7 +86,7 @@ export const Staking = () => {
                     margin: "20px 0",
                     width: "100%"
                 }}>
-                    <p style={{ marginRight: "4px", fontSize: 20, fontWeight: "bold", color : "white" }}>T3 Play Visionaries Staking Vault</p>
+                    <p style={{ marginRight: "4px", fontSize: 20, fontWeight: "bold", color: "white" }}>T3 Play Visionaries Staking Vault</p>
                     <IoIosInformationCircle data-tooltip-id="info-tooltip" style={{ fontSize: 20, cursor: 'pointer', color : "#FFFFFF" }}  />
                     <Tooltip id="info-tooltip" place="bottom" delayHide={200} style={{backgroundColor : '#636363'}} clickable>
                         <p style={{fontSize : 12}}>You need to own Visionaries NFTs to <br></br>lock in this reward vault.</p>
@@ -109,7 +110,7 @@ export const Staking = () => {
                     margin: "20px 0",
                     width: "100%"
                 }}>
-                    <h2 style={{ fontSize : 22}}>Owned NFTs</h2>
+                    <h2 style={{ fontSize: 22 }}>Owned NFTs</h2>
                     <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: "500px"}}>
                         {ownedNFTs && ownedNFTs.length > 0 ? (
                             ownedNFTs.map((nft, index) => (
