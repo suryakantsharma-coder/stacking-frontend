@@ -50,7 +50,7 @@ export const StakeRewards = () => {
                 }}>
                     <p>Wallet Balance: </p>
                     {/* @ts-ignore */}
-                    <p>{parseFloat((toEther(BigInt(tokenBalance!?.toString()) || "0"))?.toString())?.toFixed(2)} {tokenSymbol}</p>
+                    <p>{parseFloat((toEther(BigInt(tokenBalance!?.toString() || "0")))?.toString())?.toFixed(2)} {tokenSymbol}</p>
                 </div>
             )}
 
@@ -62,7 +62,7 @@ export const StakeRewards = () => {
                 margin: "20px 0",
             }}>
             <h2 style={{ marginBottom: "20px", fontSize : 18}}>Stake Rewards:</h2>
-                <h2 style={{ marginBottom: "20px", fontSize: 18 }}>{stakedInfo && parseFloat(toEther(BigInt(stakedInfo[1]?.toString())))?.toFixed(4)} {tokenSymbol}</h2>
+                <h2 style={{ marginBottom: "20px", fontSize: 18 }}>{stakedInfo && parseFloat(toEther(BigInt(stakedInfo[1]?.toString())))?.toFixed(4) || 0} {tokenSymbol}</h2>
             </div>
             {/* <TransactionButton
                 transaction={() => (
