@@ -1,8 +1,6 @@
 "use client";
-import { ConnectButton } from "thirdweb/react";
-import { client } from "./client";
 import { Staking } from "../../components/Staking";
-import { ethereum, sepolia } from "thirdweb/chains";
+
 
 export default function Home() {
 
@@ -16,7 +14,6 @@ export default function Home() {
       backgroundColor: "black",
       overflowX : "hidden",
       overflowY: "scroll",
-      // width: "500px",
     }}>
       <h1 style={{
         marginTop: 20,

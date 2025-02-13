@@ -1,18 +1,16 @@
 'use client';
-
-import { chain } from "@/app/chain";
 import { client } from "@/app/client";
 import { ConnectButton, useActiveAccount, useReadContract } from "thirdweb/react";
 import { StakeRewards } from "./StakeRewards";
 import { NFT_CONTRACT, STAKING_CONTRACT } from "../utils/contracts";
 import { NFT } from "thirdweb";
 import { useEffect, useState } from "react";
-import { claimTo, getNFTs, ownerOf, totalSupply } from "thirdweb/extensions/erc721";
+import { getNFTs, ownerOf, totalSupply } from "thirdweb/extensions/erc721";
 import { NFTCard } from "./NFTCard";
 import { StakedNFTCard } from "./StakedNFTCard";
 import { IoIosInformationCircle } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
-import { sepolia } from "thirdweb/chains";
+import { linea } from "thirdweb/chains";
 
 
 export const Staking = () => {
@@ -76,7 +74,7 @@ export const Staking = () => {
             }}>
                 <ConnectButton
                     client={client}
-                    chain={sepolia}
+                    chain={linea}
                 />
                 <div style={{
                     display: "flex",
@@ -191,7 +189,7 @@ export const Staking = () => {
            }}>
                 <ConnectButton
                   client={client}
-                  chain={sepolia}
+                  chain={linea}
                />
            </div>
         </div>)
