@@ -134,10 +134,11 @@ export const Staking = () => {
                 }}/>
                 <div style={{ 
                     margin: "20px 0",
-                    width: "100%"
+                    width: "100%",
+                    overflowX: "hidden"
                 }}>
                     <h2 style={{ fontSize: 22 }}>Owned NFTs</h2>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: "500px"}}>
+                    <div style={{ maxHeight : 450, display: "flex", flexDirection: "row", flexWrap: "wrap", overflowY : "scroll", width : '500px'}}>
                         {ownedNFTs && ownedNFTs.length > 0 ? (
                             ownedNFTs.map((nft : any) => (
                                 <NFTCard
