@@ -16,10 +16,6 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isApproved, setIsApproved] = useState(false);
 
-    useEffect(() => {
-        console.log({nft})
-    },[nft])
-
     return (
         <div style={{ margin: "10px" }}>
             <MediaRenderer
@@ -29,7 +25,9 @@ export const NFTCard = ({ nft, refetch, refecthStakedInfo }: OwnedNFTsProps) => 
                     borderRadius: "10px",
                     marginBottom: "10px",
                     height: "160px",
-                    width: "160px"
+                    width: "160px",
+                    objectFit: "cover",
+                    borderRight: 10,
                 }}
             />
             <p style={{ margin: "0 10px 10px 10px"}}>{nft.metadata.name}</p>

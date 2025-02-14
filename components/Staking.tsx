@@ -5,49 +5,78 @@ import { StakeRewards } from "./StakeRewards";
 import { NFT_CONTRACT, STAKING_CONTRACT } from "../utils/contracts";
 import { NFT } from "thirdweb";
 import { useEffect, useState } from "react";
-import { getNFTs, ownerOf, totalSupply } from "thirdweb/extensions/erc721";
+import { getNFTs, getOwnedNFTs, ownerOf, totalSupply } from "thirdweb/extensions/erc721";
 import { NFTCard } from "./NFTCard";
 import { StakedNFTCard } from "./StakedNFTCard";
 import { IoIosInformationCircle } from "react-icons/io";
 import { Tooltip } from "react-tooltip";
 import { linea } from "thirdweb/chains";
+import { getUserNfts, NftItem } from "../data/alchemy";
+import { metadata } from "@/app/layout";
 
 
 export const Staking = () => {
     const account = useActiveAccount();
 
-    const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([]);
+    const [ownedNFTs, setOwnedNFTs] = useState<any>([]);
     
-    const getOwnedNFTs = async () => {
-        let ownedNFTs: NFT[] = [];
+    // const getOwnedNFTs = async () => {
+    //     let ownedNFTs: NFT[] = [];
 
-        const totalNFTSupply = await totalSupply({
-            contract: NFT_CONTRACT,
-        });
-        const nfts = await getNFTs({
-            contract: NFT_CONTRACT,
-            start: 0,
-            count: parseInt(totalNFTSupply.toString()),
-        });
+    //     console.log({account, NFT_CONTRACT, STAKING_CONTRACT})
+
+    //     const totalNFTSupply = await totalSupply({
+    //         contract: NFT_CONTRACT,
+    //     });
+    //     const nfts = await getNFTs({
+    //         contract: NFT_CONTRACT,
+    //         start: 0,
+    //         count: parseInt(totalNFTSupply.toString()),
+    //     });
+    //     console.log({nfts, ownedNFTs, totalNFTSupply})
         
-        for (let nft of nfts) {
-            const owner = await ownerOf({
-                contract: NFT_CONTRACT,
-                tokenId: nft.id,
-            });
-            if ((owner)?.toString()?.toLowerCase() === (account?.address)?.toString()?.toLowerCase()) {
+    //     for (let nft of nfts) {
+    //         console.log({id : nft.id})
+    //         const owner = await ownerOf({
+    //             contract: NFT_CONTRACT,
+    //             tokenId: nft.id,
+    //         }).catch((err) => console.log(err));
+            
+    //         if ((owner)?.toString()?.toLowerCase() === (account?.address)?.toString()?.toLowerCase()) {
 
-                ownedNFTs.push(nft);
-            }
+    //             ownedNFTs.push(nft);
+    //         }
+    //     }
+    //     setOwnedNFTs(ownedNFTs);
+    // };
+
+
+    const getOwnerNfts = async () => {
+        console.log({ Text: "THINGS WILL FIXED" });
+        const {address} = account || { address : null };
+        if (address) {
+            const nfts = await getUserNfts(address);
+            const getImporantData = nfts.map((item: NftItem) => {
+                return {
+                    id: item.tokenId,
+                    metadata: {
+                        name: item.contract.name,
+                        secondImage: item.image.pngUrl || item.image.thumbnailUrl ||   item.image.originalUrl,
+                        image:  item.raw.metadata.image || item.image.originalUrl  || item.image.pngUrl || item.image.thumbnailUrl ||   item.image.originalUrl,
+                        tokenId: item.tokenId
+                    }
+                }
+            })
+            console.log({ getImporantData, nfts })
+            setOwnedNFTs(getImporantData);
         }
-        setOwnedNFTs(ownedNFTs);
-    };
+    }
     
     useEffect(() => {
         if(account) {
-            getOwnedNFTs();
+            getOwnerNfts();
         }
-    }, [account]);
+    },[account]);
 
 
     const {
@@ -110,11 +139,11 @@ export const Staking = () => {
                     <h2 style={{ fontSize: 22 }}>Owned NFTs</h2>
                     <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: "500px"}}>
                         {ownedNFTs && ownedNFTs.length > 0 ? (
-                            ownedNFTs.map((nft, index) => (
+                            ownedNFTs.map((nft : any) => (
                                 <NFTCard
-                                    key={nft.id || index}
+                                    key={nft.id}
                                     nft={nft}
-                                    refetch={getOwnedNFTs}
+                                    refetch={getOwnerNfts}
                                     refecthStakedInfo={refetchStakedInfo}
                                 />
                             ))
@@ -136,7 +165,7 @@ export const Staking = () => {
                                     key={index}
                                     tokenId={nft}
                                     refetchStakedInfo={refetchStakedInfo}
-                                    refetchOwnedNFTs={getOwnedNFTs}
+                                    refetchOwnedNFTs={getOwnerNfts}
                                 />
                             ))
                         ) : (

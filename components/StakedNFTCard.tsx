@@ -30,10 +30,12 @@ export const StakedNFTCard: React.FC<StakedNFTCardProps> = ({ tokenId, refetchSt
                     borderRadius: "10px",
                     marginBottom: "10px",
                     height: "160px",
-                    width: "160px"
+                    width: "160px",
+                    objectFit : "cover"
                 }}
             />
-            <p style={{ margin: "0 10px 10px 10px"}}>{nft?.metadata.name}</p>
+            <p style={{ margin: "0 10px 10px 10px"}}>{nft?.metadata.name?.split("#")[0] }</p>
+            <p style={{ margin: "0 10px 10px 10px"}}> # {nft?.metadata.name?.split("#")[1] }</p>
             <TransactionButton
                 transaction={() => (
                     prepareContractCall({
