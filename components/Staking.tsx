@@ -137,7 +137,7 @@ export const Staking = () => {
                     width: "100%",
                     overflowX: "hidden"
                 }}>
-                    <h2 style={{ fontSize: 22 }}>Owned NFTs</h2>
+                    <h2 style={{ fontSize: 22 }}>Unstaked NFTs</h2>
                     <div style={{ maxHeight : 450, display: "flex", flexDirection: "row", flexWrap: "wrap", overflowY : "scroll", width : '500px'}}>
                         {ownedNFTs && ownedNFTs.length > 0 ? (
                             ownedNFTs.map((nft : any) => (
@@ -149,7 +149,7 @@ export const Staking = () => {
                                 />
                             ))
                         ) : (
-                            <p style={{margin : "20px"}}>You own 0 NFTs</p>
+                            <p style={{margin : "20px"}}>You're unstaked NFTs 0</p>
                         )}
                     </div>
                 </div>
@@ -178,7 +178,7 @@ export const Staking = () => {
                     width: "100%",
                     border: "1px solid #333"
                 }}/>
-                <StakeRewards />  
+                <StakeRewards ownedNFTs={ownedNFTs} stakedNFTs={stakedInfo?.[0] || []} />  
             </div>
         );
     } else {

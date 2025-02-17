@@ -4,7 +4,7 @@ import { toEther } from "thirdweb";
 import { useEffect } from "react";
 import { balanceOf } from "thirdweb/extensions/erc721";
 
-export const StakeRewards = () => {
+export const StakeRewards = ({ ownedNFTs, stakedNFTs } : { ownedNFTs : Array<any>, stakedNFTs : any} ) => {
     const account = useActiveAccount();
 
     const {
@@ -42,6 +42,21 @@ export const StakeRewards = () => {
 
     return (
         <div style={{ width: "100%", margin: "20px 0", display: "flex", flexDirection: "column" }}>
+            
+                <div style={{
+                    display: "flex",
+                    justifyContent : "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    margin: "20px 0",
+                }}>
+                    <p>Staked NFTs: </p>
+                    {/* @ts-ignore */}
+                    <p>{parseInt(stakedNFTs?.length || 0)}</p>
+                </div>
+            
+
+
             {!isTokenBalanceLoading && (
                 <div style={{
                     display: "flex",
