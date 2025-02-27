@@ -12,10 +12,10 @@ import { formatUnits, parseEther } from 'ethers';
 import { prepareContractCall } from 'thirdweb';
 
 function Erc20UnStakSection() {
-  const { address } = useActiveAccount();
+  const account = useActiveAccount();
   const { data, isLoading, isError } = useWalletBalance({
     chain: sepolia,
-    address: address,
+    address: account?.address,
     client: client,
     tokenAddress: TESTING_SEPOLIA_ERC20_CONTRACT,
   });
@@ -37,10 +37,10 @@ function Erc20UnStakSection() {
       style={{
         margin: '20px 0',
         width: '100%',
-        overflowX: 'hidden',
+        overflow: 'hidden',
       }}
     >
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Unstaked Tokens</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Wallets total tokens (unstaked)</h2>
 
       <div
         style={{
@@ -131,7 +131,9 @@ function Erc20UnStakSection() {
               color: 'black',
               border: 'none',
               padding: 20,
+              opacity: value > 0 ? 1 : 0.5,
             }}
+            disabled={value <= 0}
           >
             Approve
           </TransactionButton>

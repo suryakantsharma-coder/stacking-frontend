@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import { formatEther, parseEther } from 'ethers';
 import { format } from 'path';
 import { prepareContractCall } from 'thirdweb';
+import CountdownTimer from './time-counter';
+import Countdown from 'react-countdown';
 
 function Erc20StakingSection() {
   const account = useActiveAccount();
@@ -23,8 +25,14 @@ function Erc20StakingSection() {
     params: [account?.address || '0x'],
   });
 
+  const { data: unStakWindow } = useReadContract({
+    contract: ERC20_STAKING_CONTRACT,
+    method: 'withdrawalWindow',
+    params: [],
+  });
+
   const [stakBalance, setStakBalance] = useState<string>('0');
-  const [unstakTime, setUnStackTime] = useState<number>(0);
+  const [unstakeWindow, setUnStakeWindow] = useState<number>(0);
   const [isUnstake, setIsUnstake] = useState<boolean>(false);
 
   useEffect(() => {
@@ -34,22 +42,23 @@ function Erc20StakingSection() {
       isError,
       isUserClaim,
     });
-    if (data) {
+    if (data && unStakWindow) {
       const etherValue = formatEther(`${data?.[0] || 0}` || '0');
       const time = parseInt(`${data?.[2]}` || '0');
+      const unstakWindow = parseInt(`${unStakWindow}` || '0');
       const currentTime = Date.now() / 1000;
-      console.log({ etherValue, time });
+      console.log({ etherValue, time, unstakWindow });
       setStakBalance(etherValue);
-      setUnStackTime(time);
+      setUnStakeWindow(unstakWindow);
       if (currentTime > time) {
         setIsUnstake(true);
       }
     }
-  }, [data, isLoading, isError]);
+  }, [data, unStakWindow]);
 
   return (
     <div style={{ width: '100%', margin: '20px 0' }}>
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Staked NFTs</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Wallets total tokens (Staked)</h2>
 
       <div
         style={{
@@ -69,7 +78,7 @@ function Erc20StakingSection() {
             marginBottom: 20,
           }}
         >
-          <p>Staking Token Balance : </p>
+          <p>Staked Token Balance : </p>
           <p>{parseFloat(stakBalance)?.toFixed(2)}</p>
         </div>
 
@@ -104,6 +113,21 @@ function Erc20StakingSection() {
         >
           Claim Rewards
         </TransactionButton>
+
+        {unstakeWindow > 0 && (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 20,
+            }}
+          >
+            {' '}
+            <Countdown date={unstakeWindow * 1000} />{' '}
+          </div>
+        )}
 
         {parseFloat(stakBalance) > 0 && isUnstake && (
           <TransactionButton
