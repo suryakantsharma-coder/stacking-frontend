@@ -1,4 +1,3 @@
-
 const API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY as string;
 
 export interface NftItem {
@@ -82,19 +81,19 @@ export interface NftItem {
     blockNumber: number | null;
   };
 }
-export const getUserNfts = async (owner : string) : Promise<Array<NftItem>> => {
-    try {
-        const url = `https://linea-mainnet.g.alchemy.com/nft/v3/${API_KEY}/getNFTsForOwner?owner=${owner}&contractAddresses[]=0xEa2bE906eE93590bfA8f3c1245130Cb786F8282b&withMetadata=true&pageSize=200`;
-        const options = { method: 'GET', headers: { accept: 'application/json' } };
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-        }
-
-        const { ownedNfts} = await response.json()
-        return ownedNfts;
-    } catch (err) {
-        console.error('Failed to fetch NFTs:', err);
-        return [];
+export const getUserNfts = async (owner: string): Promise<Array<NftItem>> => {
+  try {
+    const url = `https://linea-mainnet.g.alchemy.com/nft/v3/${API_KEY}/getNFTsForOwner?owner=${owner}&contractAddresses[]=0xEa2bE906eE93590bfA8f3c1245130Cb786F8282b&withMetadata=true&pageSize=200`;
+    const options = { method: 'GET', headers: { accept: 'application/json' } };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
     }
-}
+
+    const { ownedNfts } = await response.json();
+    return ownedNfts;
+  } catch (err) {
+    console.error('Failed to fetch NFTs:', err);
+    return [];
+  }
+};
