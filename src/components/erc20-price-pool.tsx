@@ -101,6 +101,31 @@ function Erc20PricePool() {
             </p>
           </div>
         </div>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingLeft: 10,
+            paddingRight: 10,
+            marginBottom: 10,
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingLeft: 10,
+              paddingRight: 10,
+            }}
+          >
+            <p>APR:</p>
+            <p>100%</p>
+          </div>
+        </div>
       </div>
     </div>
   );

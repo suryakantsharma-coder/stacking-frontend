@@ -10,6 +10,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { formatUnits, parseEther } from 'ethers';
 import { prepareContractCall } from 'thirdweb';
+import { toast } from 'react-toastify';
 
 function Erc20UnStakSection() {
   const account = useActiveAccount();
@@ -118,9 +119,12 @@ function Erc20UnStakSection() {
             }}
             onTransactionConfirmed={(receipt) => {
               setIsApproved(true);
+              toast.success('Approved successfully');
               console.log('Transaction confirmed', receipt.transactionHash);
             }}
             onError={(error) => {
+              setIsApproved(false);
+              toast.error(error?.message || 'Approved failed');
               console.error('Transaction error', error);
             }}
             style={{
@@ -150,10 +154,11 @@ function Erc20UnStakSection() {
               console.log('Transaction submitted', result.transactionHash);
             }}
             onTransactionConfirmed={(receipt) => {
-              setIsApproved(true);
+              toast.success('Staked successfully');
               console.log('Transaction confirmed', receipt.transactionHash);
             }}
             onError={(error) => {
+              toast.error(error?.message || 'Failed to stake');
               console.error('Transaction error', error);
             }}
             style={{

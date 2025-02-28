@@ -11,6 +11,7 @@ import { format } from 'path';
 import { prepareContractCall } from 'thirdweb';
 import CountdownTimer from './time-counter';
 import Countdown from 'react-countdown';
+import { toast } from 'react-toastify';
 
 function Erc20StakingSection() {
   const account = useActiveAccount();
@@ -34,6 +35,7 @@ function Erc20StakingSection() {
   const [stakBalance, setStakBalance] = useState<string>('0');
   const [unstakeWindow, setUnStakeWindow] = useState<number>(0);
   const [isUnstake, setIsUnstake] = useState<boolean>(false);
+  const [isUnstakable, setIsUnstakable] = useState<boolean>(false);
 
   useEffect(() => {
     console.log({
@@ -47,14 +49,75 @@ function Erc20StakingSection() {
       const time = parseInt(`${data?.[2]}` || '0');
       const unstakWindow = parseInt(`${unStakWindow}` || '0');
       const currentTime = Date.now() / 1000;
+      const isUnstakReady = currentTime > unstakWindow ? true : false;
       console.log({ etherValue, time, unstakWindow });
       setStakBalance(etherValue);
       setUnStakeWindow(unstakWindow);
+      setIsUnstakable(isUnstakReady);
       if (currentTime > time) {
         setIsUnstake(true);
       }
     }
   }, [data, unStakWindow]);
+
+  const renderer = ({
+    days,
+    hours,
+    minutes,
+    seconds,
+    completed,
+  }: {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+    completed: boolean;
+  }) => {
+    if (completed) {
+      // Render a completed state
+      // return (
+      //   <TransactionButton
+      //     transaction={() =>
+      //       prepareContractCall({
+      //         contract: ERC20_STAKING_CONTRACT,
+      //         method: 'UnstackAndRewardClaim',
+      //         params: [],
+      //       })
+      //     }
+      //     onTransactionSent={(result) => {
+      //       console.log('Transaction submitted', result.transactionHash);
+      //     }}
+      //     onTransactionConfirmed={(receipt) => {
+      //       console.log('Transaction confirmed', receipt.transactionHash);
+      //     }}
+      //     onError={(error) => {
+      //       console.error('Transaction error', error);
+      //     }}
+      //     style={{
+      //       width: '100%',
+      //       height: 40,
+      //       cursor: 'pointer',
+      //       backgroundColor: '#FFFFFF',
+      //       color: 'black',
+      //       border: 'none',
+      //       padding: 20,
+      //       marginTop: 20,
+      //     }}
+      //   >
+      //     unstake
+      //   </TransactionButton>
+      // );
+
+      return null;
+    } else {
+      // Render a countdown
+      return (
+        <span>
+          {days}D : {hours}h :{minutes}m : {seconds}s
+        </span>
+      );
+    }
+  };
 
   return (
     <div style={{ width: '100%', margin: '20px 0' }}>
@@ -94,9 +157,11 @@ function Erc20StakingSection() {
             console.log('Transaction submitted', result.transactionHash);
           }}
           onTransactionConfirmed={(receipt) => {
+            toast.success('Reward Claimed');
             console.log('Transaction confirmed', receipt.transactionHash);
           }}
           onError={(error) => {
+            toast.error(error.message || 'Reward Failed to Claimed');
             console.error('Transaction error', error);
           }}
           style={{
@@ -125,7 +190,8 @@ function Erc20StakingSection() {
             }}
           >
             {' '}
-            <Countdown date={unstakeWindow * 1000} />{' '}
+            {/* <Countdown date={unstakeWindow * 1000} renderer={renderer} />{' '} */}
+            <Countdown date={unstakeWindow * 1000} renderer={renderer} />{' '}
           </div>
         )}
 
@@ -142,9 +208,11 @@ function Erc20StakingSection() {
               console.log('Transaction submitted', result.transactionHash);
             }}
             onTransactionConfirmed={(receipt) => {
+              toast.success('Tokens Unstaked');
               console.log('Transaction confirmed', receipt.transactionHash);
             }}
             onError={(error) => {
+              toast.error(error.message || 'Transaction Failed');
               console.error('Transaction error', error);
             }}
             style={{
@@ -156,7 +224,9 @@ function Erc20StakingSection() {
               border: 'none',
               padding: 20,
               marginTop: 20,
+              opacity: isUnstakable ? 1 : 0.5,
             }}
+            disabled={!isUnstakable}
           >
             unstake
           </TransactionButton>
