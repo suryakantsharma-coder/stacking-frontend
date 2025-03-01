@@ -1,5 +1,5 @@
 import { useActiveAccount, useReadContract } from 'thirdweb/react';
-import { ERC20_STAKING_CONTRACT } from '../../utils/contracts';
+import { ERC20_CONTRACT, ERC20_STAKING_CONTRACT } from '../../utils/contracts';
 import { useEffect, useState } from 'react';
 import { formatEther } from 'ethers';
 
@@ -20,9 +20,15 @@ function Erc20PricePool() {
     method: 'stakeLimit',
     params: [],
   });
+  const { data: poolSize } = useReadContract({
+    contract: ERC20_CONTRACT,
+    method: 'balanceOf',
+    params: [ERC20_STAKING_CONTRACT.address],
+  });
 
   const [totalStakedTokens, setTotalStakedTokens] = useState<string>();
   const [stakeLimit, setStakeLimit] = useState<string>();
+  const [poolSizeTokens, setPoolSizeTokens] = useState<string>('0');
 
   useEffect(() => {
     if (totalStaked && staklimit) {
@@ -31,8 +37,9 @@ function Erc20PricePool() {
       console.log({ totalStaked, ether, etherLimit });
       setTotalStakedTokens(ether);
       setStakeLimit(etherLimit);
+      setPoolSizeTokens(formatEther(poolSize?.toString() || `0`));
     }
-  }, [totalStaked, staklimit]);
+  }, [totalStaked, staklimit, poolSize]);
 
   return (
     <div
@@ -60,7 +67,9 @@ function Erc20PricePool() {
             padding: 10,
           }}
         >
-          <p style={{ fontSize: 26, fontWeight: 'bold' }}>1,00,000</p>
+          <p style={{ fontSize: 26, fontWeight: 'bold' }}>
+            {parseFloat(poolSizeTokens).toFixed(0) || '1,00,000'}
+          </p>
         </div>
 
         <div
@@ -83,7 +92,6 @@ function Erc20PricePool() {
             alignItems: 'center',
             padding: 10,
             marginTop: 5,
-            marginBottom: 5,
           }}
         >
           <div
@@ -97,7 +105,7 @@ function Erc20PricePool() {
           >
             <p>Tokens Staked: </p>
             <p>
-              {parseInt(`${totalStakedTokens}`)} / {parseInt(`${stakeLimit}`)}
+              {parseInt(`${totalStakedTokens}`) || 0} / {parseInt(`${stakeLimit}`) || 0}
             </p>
           </div>
         </div>
@@ -122,8 +130,8 @@ function Erc20PricePool() {
               paddingRight: 10,
             }}
           >
-            <p>APR:</p>
-            <p>100%</p>
+            <p>Duration:</p>
+            <p>9 Months</p>
           </div>
         </div>
       </div>

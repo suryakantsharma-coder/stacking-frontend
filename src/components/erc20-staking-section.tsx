@@ -49,7 +49,7 @@ function Erc20StakingSection() {
       const time = parseInt(`${data?.[2]}` || '0');
       const unstakWindow = parseInt(`${unStakWindow}` || '0');
       const currentTime = Date.now() / 1000;
-      const isUnstakReady = currentTime > unstakWindow ? true : false;
+      const isUnstakReady = currentTime < unstakWindow ? true : false;
       console.log({ etherValue, time, unstakWindow });
       setStakBalance(etherValue);
       setUnStakeWindow(unstakWindow);
@@ -121,7 +121,8 @@ function Erc20StakingSection() {
 
   return (
     <div style={{ width: '100%', margin: '20px 0' }}>
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Wallets total tokens (Staked)</h2>
+      {/* <h2 style={{ fontSize: 20, marginBottom: 10 }}>Wallet's total tokens (Staked)</h2> */}
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your wallet’s tokens (Staked)</h2>
 
       <div
         style={{
@@ -138,11 +139,30 @@ function Erc20StakingSection() {
             alignItems: 'center',
             padding: 10,
             marginTop: 20,
-            marginBottom: 20,
           }}
         >
           <p>Staked Token Balance : </p>
           <p>{parseFloat(stakBalance)?.toFixed(2)}</p>
+        </div>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: 10,
+            marginBottom: 20,
+          }}
+        >
+          <p>Monthly Reward (APR) : </p>
+          <p
+            style={{
+              color: '#32CD32',
+              fontWeight: 'bold',
+            }}
+          >
+            11% 🚀
+          </p>
         </div>
 
         <TransactionButton
@@ -195,7 +215,7 @@ function Erc20StakingSection() {
           </div>
         )}
 
-        {parseFloat(stakBalance) > 0 && isUnstake && (
+        {parseFloat(stakBalance) > 0 && (
           <TransactionButton
             transaction={() =>
               prepareContractCall({
