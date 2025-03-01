@@ -41,7 +41,7 @@ function Erc20UnStakSection() {
         overflow: 'hidden',
       }}
     >
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your wallet’s tokens (unstacked)</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your wallet’s tokens (unstaked)</h2>
 
       <div
         style={{

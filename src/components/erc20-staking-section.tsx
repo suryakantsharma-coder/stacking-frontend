@@ -7,7 +7,7 @@ import {
 import { ERC20_STAKING_CONTRACT } from '../../utils/contracts';
 import { useEffect, useState } from 'react';
 import { formatEther, parseEther } from 'ethers';
-import { format } from 'path';
+import { format, parse } from 'path';
 import { prepareContractCall } from 'thirdweb';
 import CountdownTimer from './time-counter';
 import Countdown from 'react-countdown';
@@ -199,7 +199,7 @@ function Erc20StakingSection() {
           Claim Rewards
         </TransactionButton>
 
-        {unstakeWindow > 0 && (
+        {unstakeWindow > 0 && parseFloat(stakBalance) > 0 && (
           <div
             style={{
               width: '100%',
