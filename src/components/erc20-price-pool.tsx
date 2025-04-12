@@ -49,7 +49,7 @@ function Erc20PricePool() {
         overflowX: 'hidden',
       }}
     >
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Price Pool</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Rewards Pool</h2>
 
       <div
         style={{
@@ -90,7 +90,8 @@ function Erc20PricePool() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: 10,
+            paddingTop: 10,
+            paddingBottom: 10,
             marginTop: 5,
           }}
         >
@@ -100,7 +101,8 @@ function Erc20PricePool() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              padding: 10,
+              paddingTop: 10,
+              paddingBottom: 10,
             }}
           >
             <p>Tokens Staked: </p>
@@ -115,8 +117,8 @@ function Erc20PricePool() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingLeft: 10,
-            paddingRight: 10,
+            paddingTop: 0,
+            paddingBottom: 0,
             marginBottom: 10,
           }}
         >
@@ -126,8 +128,8 @@ function Erc20PricePool() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              paddingLeft: 10,
-              paddingRight: 10,
+              paddingTop: 0,
+              paddingBottom: 0,
             }}
           >
             <p>Duration:</p>

@@ -4,6 +4,15 @@ import { ToastContainer } from 'react-toastify';
 function Page() {
   return (
     <>
+      {/* <p
+        style={{
+          width: '100%',
+          textAlign: 'center',
+          marginTop: '10px',
+        }}
+      >
+        Coming Soon
+      </p> */}
       <ToastContainer />
       <div
         style={{
@@ -23,7 +32,7 @@ function Page() {
             color: 'white',
           }}
         >
-          Token Staking Vault{' '}
+          $T3P Staking Vault{' '}
         </h1>
         <Erc20StakingVault />
       </div>

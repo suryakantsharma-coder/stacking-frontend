@@ -41,7 +41,7 @@ function Erc20UnStakSection() {
         overflow: 'hidden',
       }}
     >
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your wallet’s tokens (unstaked)</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your $T3P tokens (Unstaked)</h2>
 
       <div
         style={{
@@ -56,7 +56,8 @@ function Erc20UnStakSection() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: 10,
+            paddingTop: 10,
+            paddingBottom: 10,
           }}
         >
           <p>Token Balance : </p>
@@ -85,7 +86,8 @@ function Erc20UnStakSection() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: 10,
+            paddingTop: 10,
+            paddingBottom: 10,
             marginTop: 5,
             marginBottom: 5,
           }}
@@ -93,7 +95,7 @@ function Erc20UnStakSection() {
           <p>Amount :</p>
           <input
             style={{
-              width: '200px',
+              width: '150px',
               height: 30,
               paddingLeft: 5,
               paddingRight: 5,
@@ -156,6 +158,10 @@ function Erc20UnStakSection() {
             onTransactionConfirmed={(receipt) => {
               toast.success('Staked successfully');
               console.log('Transaction confirmed', receipt.transactionHash);
+              const timeInSeconds = new Date().getTime() / 1000;
+              const upcomingClaim = parseInt(`${timeInSeconds}`) + 3600;
+              localStorage.setItem('userRewardClaimTime', `${timeInSeconds}`);
+              localStorage.setItem('userRewardUpcomingTime', `${upcomingClaim}`);
             }}
             onError={(error) => {
               toast.error(error?.message || 'Failed to stake');

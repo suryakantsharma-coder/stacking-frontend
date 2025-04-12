@@ -7,8 +7,11 @@ import InfoSection from './Info-section';
 import Erc20UnStakSection from './erc20-unstack-section';
 import Erc20StakingSection from './erc20-staking-section';
 import Erc20PricePool from './erc20-price-pool';
+import { useState } from 'react';
 
 function Erc20StackingSection() {
+  const [isStakeing, setIsStakeing] = useState<boolean>(true);
+
   return (
     <div
       style={{
@@ -29,7 +32,7 @@ function Erc20StackingSection() {
         html={() => {
           return (
             <p style={{ fontSize: 12 }}>
-              You need to own Visionaries NFTs to <br></br>lock in this reward vault.
+              You need to own $T3P tokens to <br></br>lock in this reward vault.
             </p>
           );
         }}
@@ -50,7 +53,7 @@ function Erc20StackingSection() {
         }}
       />
 
-      <Erc20UnStakSection />
+      {isStakeing && <Erc20UnStakSection />}
 
       <hr
         style={{
@@ -59,7 +62,7 @@ function Erc20StackingSection() {
         }}
       />
 
-      <Erc20StakingSection />
+      <Erc20StakingSection setIsStakeing={setIsStakeing} />
       <hr
         style={{
           width: '100%',
