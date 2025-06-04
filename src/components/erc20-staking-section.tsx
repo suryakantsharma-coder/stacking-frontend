@@ -1,13 +1,20 @@
 'use client';
-import { TransactionButton, useActiveAccount, useReadContract } from 'thirdweb/react';
-import { ERC20_STAKING_CONTRACT } from '../../utils/contracts';
+import {
+  TransactionButton,
+  useActiveAccount,
+  useReadContract,
+  useWalletBalance,
+} from 'thirdweb/react';
+import { ERC20_STAKING_CONTRACT, TESTING_SEPOLIA_ERC20_CONTRACT } from '../../utils/contracts';
 import { useEffect, useState } from 'react';
-import { formatEther } from 'ethers';
+import { formatEther, formatUnits } from 'ethers';
 import { prepareContractCall } from 'thirdweb';
 import Countdown from 'react-countdown';
 import { toast } from 'react-toastify';
 import ClaimCounter from './claimCounter';
 import WithdrawalTimer from './claimNewTimer';
+import { sepolia } from 'thirdweb/chains';
+import { client } from '@/app/client';
 
 function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   const account = useActiveAccount();
@@ -36,6 +43,17 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
     params: [account?.address || '0x'],
   });
 
+  const {
+    data: walletTokenBalance,
+    isLoading: isBalanceChecking,
+    isError: BalanceError,
+  } = useWalletBalance({
+    chain: sepolia,
+    address: account?.address,
+    client: client,
+    tokenAddress: TESTING_SEPOLIA_ERC20_CONTRACT,
+  });
+
   const [stakBalance, setStakBalance] = useState<string>('0');
   const [unstakeWindow, setUnStakeWindow] = useState<number>(0);
   const [isUnstake, setIsUnstake] = useState<boolean>(false);
@@ -45,6 +63,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   const [rewardpoints, setRewardPoints] = useState<any>('0');
   const [unstackDisabled, setUnstackDisabled] = useState<boolean>(false);
   const [updatedState, setUpdateState] = useState<boolean>(false);
+  const [tempTimeStamp, setTempTimeStamp] = useState<number>(0);
 
   // store claims
 
@@ -236,9 +255,10 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
 
   const updateUnstakeButton = () => {
     if (data) {
-      const unstakeTime = parseInt(`${data?.[2]}`) || 0;
       const currentTime = parseInt(`${new Date().getTime() / 1000}`);
+      const unstakeTime = parseInt(`${data?.[2]}`) || currentTime + 1 * 60 * 60;
       console.log({ unstakeTime, currentTime });
+      setTempTimeStamp(currentTime + 1 * 60 * 60);
       if (currentTime > unstakeTime) {
         setUnstackDisabled(false);
       }
@@ -253,7 +273,28 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
 
   return (
     <div style={{ width: '100%', margin: '20px 0' }}>
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your $T3P tokens (Staked)</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your Staking Info</h2>
+
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingTop: 10,
+          // paddingBottom: 10,
+        }}
+      >
+        <p>Wallet Balance: </p>
+        <p>
+          {isLoading
+            ? 'loading...'
+            : parseFloat(
+                formatUnits(walletTokenBalance?.value || 0, walletTokenBalance?.decimals),
+              )?.toFixed(2) + ' '}
+          $T3P
+        </p>
+      </div>
 
       <div
         style={{
@@ -268,15 +309,15 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingTop: 10,
+            // paddingTop: 10,
             paddingBottom: 10,
             marginTop: 20,
           }}
         >
           <p>Staked Token Balance : </p>
-          <p>{parseFloat(stakBalance)?.toFixed(2)}</p>
+          <p>{parseFloat(stakBalance)?.toFixed(2)} $T3P</p>
         </div>
-        <div
+        {/* <div
           style={{
             width: '100%',
             display: 'flex',
@@ -295,7 +336,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           >
             11.1% 🚀
           </p>
-        </div>
+        </div> */}
         <div
           style={{
             width: '100%',
@@ -392,26 +433,63 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           </>
         )}
 
-        {parseFloat(stakBalance) > 0 &&
-          unstakeWindow > new Date().getTime() / 1000 &&
-          !unstackDisabled && (
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: 30,
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
-            >
-              {' '}
-              <Countdown date={claimTime * 1000} renderer={renderer} />{' '}
-            </div>
-          )}
+        {unstakeWindow > new Date().getTime() / 1000 && !unstackDisabled && (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 30,
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+          >
+            {' '}
+            <Countdown date={claimTime * 1000} renderer={renderer} />{' '}
+          </div>
+        )}
 
-        {parseFloat(stakBalance) > 0 && (
+        {unstakeWindow > new Date().getTime() / 1000 && unstackDisabled && (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 30,
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+          >
+            {' '}
+            <Countdown date={parseInt(`${data?.[2]}`) * 1000} renderer={renderer} />{' '}
+          </div>
+        )}
+
+        {/* temperaroy timer */}
+
+        {!data && (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 30,
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+          >
+            {' '}
+            <Countdown
+              date={parseInt(`${new Date().getTime() / 1000 + 1 * 60 * 60}`) * 1000}
+              renderer={renderer}
+            />{' '}
+          </div>
+        )}
+
+        {parseFloat(stakBalance) > 0 ? (
           <TransactionButton
             transaction={() =>
               prepareContractCall({
@@ -443,6 +521,41 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
               opacity: !unstackDisabled ? 1 : 0.5,
             }}
             disabled={unstackDisabled}
+          >
+            Unstake
+          </TransactionButton>
+        ) : (
+          <TransactionButton
+            transaction={() =>
+              prepareContractCall({
+                contract: ERC20_STAKING_CONTRACT,
+                method: 'UnstackAndRewardClaim',
+                params: [],
+              })
+            }
+            onTransactionSent={(result) => {
+              console.log('Transaction submitted', result.transactionHash);
+            }}
+            onTransactionConfirmed={(receipt) => {
+              toast.success('Tokens Unstaked');
+              console.log('Transaction confirmed', receipt.transactionHash);
+            }}
+            onError={(error) => {
+              toast.error(error.message || 'Transaction Failed');
+              console.error('Transaction error', error);
+            }}
+            style={{
+              width: '100%',
+              height: 40,
+              cursor: 'pointer',
+              backgroundColor: '#FFFFFF',
+              color: 'black',
+              border: 'none',
+              padding: 20,
+              marginTop: 10,
+              opacity: 0.5,
+            }}
+            disabled={true}
           >
             Unstake
           </TransactionButton>

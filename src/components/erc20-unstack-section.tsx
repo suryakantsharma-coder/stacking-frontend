@@ -41,7 +41,7 @@ function Erc20UnStakSection() {
         overflow: 'hidden',
       }}
     >
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your $T3P tokens (Unstaked)</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Your $T3P Tokens (Unstaked)</h2>
 
       <div
         style={{
@@ -64,7 +64,8 @@ function Erc20UnStakSection() {
           <p>
             {isLoading
               ? 'loading...'
-              : parseFloat(formatUnits(data?.value || 0, data?.decimals))?.toFixed(2)}
+              : parseFloat(formatUnits(data?.value || 0, data?.decimals))?.toFixed(2)}{' '}
+            $T3P
           </p>
         </div>
 

@@ -19,7 +19,7 @@ function InfoSection({ heading, text, html }: props) {
       }}
     >
       <p style={{ marginRight: '4px', fontSize: 20, fontWeight: 'bold', color: 'white' }}>
-        $T3P Staking Vault
+        6 Month lock up (60% APR)
       </p>
       <IoIosInformationCircle
         data-tooltip-id="info-tooltip"
@@ -37,11 +37,11 @@ function InfoSection({ heading, text, html }: props) {
         <p>
           <a
             style={{ fontSize: 12, color: 'yellow', textDecoration: 'underline' }}
-            href="https://element.market/collections/t3playvisionaries"
+            href="https://www.t3play.com/tokens"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {heading || 'Purchase Visionaries here'}
+            {heading || 'Purchase $T3P Here'}
           </a>
         </p>
       </Tooltip>

@@ -49,7 +49,7 @@ function Erc20PricePool() {
         overflowX: 'hidden',
       }}
     >
-      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Rewards Pool</h2>
+      <h2 style={{ fontSize: 20, marginBottom: 10 }}>Total Reward Pool ($T3P)</h2>
 
       <div
         style={{
@@ -105,7 +105,7 @@ function Erc20PricePool() {
               paddingBottom: 10,
             }}
           >
-            <p>Tokens Staked: </p>
+            <p>Total tokens staked: </p>
             <p>
               {parseInt(`${totalStakedTokens}`) || 0} / {parseInt(`${stakeLimit}`) || 0}
             </p>
@@ -133,8 +133,29 @@ function Erc20PricePool() {
             }}
           >
             <p>Duration:</p>
-            <p>9 Months</p>
+            <p>6 Months</p>
           </div>
+        </div>
+
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingTop: 10,
+            paddingBottom: 10,
+          }}
+        >
+          <p>Monthly Reward (APR) : </p>
+          <p
+            style={{
+              color: '#32CD32',
+              fontWeight: 'bold',
+            }}
+          >
+            10% 🚀
+          </p>
         </div>
       </div>
     </div>

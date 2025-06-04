@@ -28,7 +28,7 @@ function Erc20StackingSection() {
     >
       <ConnectButton client={client} chain={sepolia} />
       <InfoSection
-        heading="T3 Play Visionaries Staking Vault"
+        heading="Purchase $T3P Here"
         html={() => {
           return (
             <p style={{ fontSize: 12 }}>
