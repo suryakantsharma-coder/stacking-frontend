@@ -1,5 +1,5 @@
 import { useActiveAccount, useReadContract } from 'thirdweb/react';
-import { ERC20_CONTRACT, ERC20_STAKING_CONTRACT } from '../../utils/contracts';
+import { ERC20_CONTRACT, ERC20_STAKING_CONTRACT } from '../../../utils/contracts';
 import { useEffect, useState } from 'react';
 import { formatEther } from 'ethers';
 

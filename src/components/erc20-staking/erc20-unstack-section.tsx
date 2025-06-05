@@ -6,7 +6,7 @@ import {
   ERC20_STAKING_CONTRACT,
   TESTING_SEPOLIA_ERC20_CONTRACT,
   TESTING_SEPOLIA_ERC20_STAKING_CONTRACT,
-} from '../../utils/contracts';
+} from '../../../utils/contracts';
 import React, { useEffect, useState } from 'react';
 import { formatUnits, parseEther } from 'ethers';
 import { prepareContractCall } from 'thirdweb';

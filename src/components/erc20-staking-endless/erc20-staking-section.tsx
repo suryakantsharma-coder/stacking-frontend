@@ -5,43 +5,45 @@ import {
   useReadContract,
   useWalletBalance,
 } from 'thirdweb/react';
-import { ERC20_STAKING_CONTRACT, TESTING_SEPOLIA_ERC20_CONTRACT } from '../../utils/contracts';
+import {
+  ERC20_STAKING_CONTRACT,
+  TESTING_SEPOLIA_ERC20_CONTRACT,
+  ERC20_ENDLESS_STAKING_CONTRACT,
+} from '../../../utils/contracts';
 import { useEffect, useState } from 'react';
 import { formatEther, formatUnits } from 'ethers';
 import { prepareContractCall } from 'thirdweb';
 import Countdown from 'react-countdown';
 import { toast } from 'react-toastify';
-import ClaimCounter from './claimCounter';
-import WithdrawalTimer from './claimNewTimer';
+import WithdrawalTimer from '../erc20-staking/claimNewTimer';
 import { sepolia } from 'thirdweb/chains';
 import { client } from '@/app/client';
 
 function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   const account = useActiveAccount();
 
-  const { data, isLoading, isError } = useReadContract({
-    contract: ERC20_STAKING_CONTRACT,
-    method: 'stakes',
-    params: [account?.address || '0x'],
-  });
-
   const { data: isUserClaim, refetch: refreshClaimBtn } = useReadContract({
-    contract: ERC20_STAKING_CONTRACT,
-    method: 'canClaimMonthlyReward',
+    contract: ERC20_ENDLESS_STAKING_CONTRACT,
+    method: 'getClaimableReward',
     params: [account?.address || '0x'],
   });
 
-  const { data: unStakWindow } = useReadContract({
-    contract: ERC20_STAKING_CONTRACT,
-    method: 'withdrawalWindow',
-    params: [],
-  });
-
-  const { data: userDetails, refetch: refreshUserDetails } = useReadContract({
-    contract: ERC20_STAKING_CONTRACT,
+  const {
+    data: userDetails,
+    isLoading,
+    isError,
+    refetch: refreshUserDetails,
+  } = useReadContract({
+    contract: ERC20_ENDLESS_STAKING_CONTRACT,
     method: 'stakes',
     params: [account?.address || '0x'],
   });
+
+  // const { data: unStakWindow } = useReadContract({
+  //   contract: ERC20_ENDLESS_STAKING_CONTRACT,
+  //   method: 'withdrawalWindow',
+  //   params: [],
+  // });
 
   const {
     data: walletTokenBalance,
@@ -77,80 +79,30 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   };
 
   useEffect(() => {
-    console.log({
-      data,
-      isLoading,
-      isError,
-      isUserClaim,
-    });
-    if (data && unStakWindow) {
-      const etherValue = formatEther(`${data?.[0] || 0}` || '0');
-      const time = parseInt(`${data?.[2]}` || '0');
-      const unstakWindow = parseInt(`${unStakWindow}` || '0');
+    if (userDetails) {
+      const etherValue = formatEther(`${userDetails?.[0]}` || '0');
+      const time = parseInt(`${userDetails?.[2]}` || '0');
       const currentTime = Date.now() / 1000;
-      const stackTime = parseInt(`${data?.[2]}` || '0');
-      const isUnstakReady = currentTime > unstakWindow ? false : true;
-      console.log({ etherValue, time, unstakWindow, isUnstakReady });
+      const stackTime = parseInt(`${userDetails?.[2]}` || '0');
       setStakBalance(etherValue);
-      setUnStakeWindow(unstakWindow);
-      setIsUnstakable(isUnstakReady);
+
       if (currentTime > time) {
         setIsUnstake(true);
       }
     }
-  }, [data, unStakWindow]);
+  }, [userDetails]);
 
   useEffect(() => {
     if (userDetails) {
-      console.log({ userDetails, unStakWindow });
-      const unstakWindow = parseInt(`${unStakWindow}` || '0');
+      console.log({ userDetails });
       const time = parseInt(`${userDetails?.[2]}` || '0');
       const lastClaim = parseInt(`${userDetails?.[4]}` || '0');
       const currentTime = Date.now() / 1000;
-      if (currentTime > time && currentTime > unstakWindow) {
-        setIsUnstakable(true);
-      }
-
       if (lastClaim) {
         setClaimTime(lastClaim + 60);
       }
     }
-  }, [userDetails, unStakWindow]);
-
-  useEffect(() => {
-    if (isUserClaim) {
-      console.log({ isUserClaim });
-      const data = formatEther(`${isUserClaim?.[1] || '0'}`);
-
-      const monthsPassed: number = parseInt(`${isUserClaim?.[2]}` || '0');
-      console.log({ monthsPassed });
-
-      if (monthsPassed <= 9) {
-        const currentTime = new Date().getTime() / 1000;
-        let month = 0;
-
-        if (parseInt(`${currentTime}`) < parseInt(`${unstakeWindow}`)) {
-          month = monthsPassed == 0 ? 1 : monthsPassed;
-        } else {
-          month = monthsPassed == 0 ? 1 : monthsPassed;
-        }
-
-        const months = month * 3600 + 1900;
-        const upcomingClaim = parseInt(`${unStakWindow}` || '0') + months;
-        const upcomingLocalClaim = new Date(upcomingClaim * 1000).getTime();
-        console.log({
-          upcomingClaim,
-          upcomingLocalClaim,
-          months,
-          unStakWindow,
-          monthsPassed,
-          m: monthsPassed * 60,
-        });
-      }
-
-      setRewardPoints(data);
-    }
-  }, [isUserClaim, unStakWindow]);
+  }, [userDetails]);
 
   useEffect(() => {
     const time = localStorage.getItem('userRewardUpcomingTime') || null;
@@ -170,6 +122,10 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
       }
     }
   }, [isUserClaimed, stakBalance]);
+
+  useEffect(() => {
+    console.log({ isUserClaim });
+  }, [isUserClaim]);
 
   const renderer = ({
     days,
@@ -254,9 +210,9 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   }, [unstakeWindow]);
 
   const updateUnstakeButton = () => {
-    if (data) {
+    if (userDetails) {
       const currentTime = parseInt(`${new Date().getTime() / 1000}`);
-      const unstakeTime = parseInt(`${data?.[2]}`) || currentTime + 1 * 60 * 60;
+      const unstakeTime = parseInt(`${userDetails?.[2]}`) || currentTime + 1 * 60 * 60;
       console.log({ unstakeTime, currentTime });
       setTempTimeStamp(currentTime + 1 * 60 * 60);
       if (currentTime > unstakeTime) {
@@ -269,7 +225,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
     setTimeout(() => {
       updateUnstakeButton();
     }, 2000);
-  }, [data]);
+  }, [userDetails]);
 
   return (
     <div style={{ width: '100%', margin: '20px 0' }}>
@@ -359,7 +315,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           </p>
         </div>
 
-        {parseInt(`${data?.[2]}` || '0') > parseInt(`${new Date().getTime() / 1000}`) && (
+        {parseInt(`${userDetails?.[2]}` || '0') > parseInt(`${new Date().getTime() / 1000}`) && (
           <div
             style={{
               width: '100%',
@@ -376,7 +332,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
               <>
                 {unstackDisabled && (
                   <WithdrawalTimer
-                    finalTimestamp={(parseInt(`${data?.[2]}`) || 0) * 1000}
+                    finalTimestamp={(parseInt(`${userDetails?.[2]}`) || 0) * 1000}
                     // finalTimestamp={1743769242 * 1000}
                     updateFn={() => {
                       console.log('refresh the data claim btn');
@@ -398,8 +354,8 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
             <TransactionButton
               transaction={() =>
                 prepareContractCall({
-                  contract: ERC20_STAKING_CONTRACT,
-                  method: 'claimMonthlyReward',
+                  contract: ERC20_ENDLESS_STAKING_CONTRACT,
+                  method: 'claimReward',
                   params: [],
                 })
               }
@@ -463,13 +419,13 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
             }}
           >
             {' '}
-            <Countdown date={parseInt(`${data?.[2]}`) * 1000} renderer={renderer} />{' '}
+            <Countdown date={parseInt(`${userDetails?.[2]}`) * 1000} renderer={renderer} />{' '}
           </div>
         )}
 
         {/* temperaroy timer */}
 
-        {!data && (
+        {!userDetails && (
           <div
             style={{
               width: '100%',
@@ -493,8 +449,8 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           <TransactionButton
             transaction={() =>
               prepareContractCall({
-                contract: ERC20_STAKING_CONTRACT,
-                method: 'UnstackAndRewardClaim',
+                contract: ERC20_ENDLESS_STAKING_CONTRACT,
+                method: 'unstake',
                 params: [],
               })
             }
@@ -528,8 +484,8 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           <TransactionButton
             transaction={() =>
               prepareContractCall({
-                contract: ERC20_STAKING_CONTRACT,
-                method: 'UnstackAndRewardClaim',
+                contract: ERC20_ENDLESS_STAKING_CONTRACT,
+                method: 'unstake',
                 params: [],
               })
             }

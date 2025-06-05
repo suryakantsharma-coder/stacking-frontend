@@ -4,7 +4,7 @@ import { getContract } from 'thirdweb';
 import { stakingABI } from './stakingABI';
 import { sepolia } from 'thirdweb/chains';
 import { erc20Abi } from './erc20-abi';
-import { erc20StakingAbi } from './staking-abi';
+import { endlessStakingContractABI, erc20StakingAbi } from './staking-abi';
 
 // sepoloia
 const sepolia_nftContractAddress = '0x49A70E4DBF445901e7368B149fB050BE55a62446';
@@ -66,4 +66,15 @@ export const ERC20_STAKING_CONTRACT = getContract({
   chain: sepolia,
   address: TESTING_SEPOLIA_ERC20_STAKING_CONTRACT,
   abi: erc20StakingAbi,
+});
+
+// ERC20 ENDLESS
+
+export const TEST_ENDLESS_STAKING_CONTRACT = '0x45234065b1f3c147fd77C44F226e2E18ea83C902';
+
+export const ERC20_ENDLESS_STAKING_CONTRACT = getContract({
+  client: client,
+  chain: sepolia,
+  address: TEST_ENDLESS_STAKING_CONTRACT,
+  abi: endlessStakingContractABI,
 });
