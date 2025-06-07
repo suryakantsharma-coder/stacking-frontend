@@ -139,12 +139,12 @@ const WithdrawalTimer = ({
       }
 
       // 2-minute breakdown (if needed)
-      const timeBreakDowns = 1 * 60;
-      // const timeBreakDowns = 1 * 60 * 60;
+      // const timeBreakDowns = 1 * 60;
+      const timeBreakDowns = 1 * 60 * 60;
 
       // Calculate remaining seconds to the next 1-minute mark
-      // setSecondsLeft(Math.floor(((timeLeft % 60) * 60 * 1000) / 1000) || timeBreakDowns);  // for 1 hour
-      setSecondsLeft(Math.floor(((timeLeft % 60) * 1000) / 1000) || timeBreakDowns); // for 1 minute
+      setSecondsLeft(Math.floor(((timeLeft % 60) * 60 * 1000) / 1000) || timeBreakDowns); // for 1 hour
+      // setSecondsLeft(Math.floor(((timeLeft % 60) * 1000) / 1000) || timeBreakDowns); // for 1 minute
     };
 
     checkTimeCompletion(); // Check on mount

@@ -160,10 +160,13 @@ function Erc20UnStakSectionEndless() {
             onTransactionConfirmed={(receipt) => {
               toast.success('Staked successfully');
               console.log('Transaction confirmed', receipt.transactionHash);
-              const timeInSeconds = new Date().getTime() / 1000;
-              const upcomingClaim = parseInt(`${timeInSeconds}`) + 3600;
-              localStorage.setItem('userRewardClaimTime', `${timeInSeconds}`);
-              localStorage.setItem('userRewardUpcomingTime', `${upcomingClaim}`);
+
+              // set time after staking
+
+              const getClaimTime = new Date().getTime();
+              const intervalTime = 1 * 60 * 60 * 1000;
+              const totalTime = getClaimTime + intervalTime;
+              window.localStorage.setItem('claimTime', totalTime?.toString()); // Store the claim time
             }}
             onError={(error) => {
               toast.error(error?.message || 'Failed to stake');

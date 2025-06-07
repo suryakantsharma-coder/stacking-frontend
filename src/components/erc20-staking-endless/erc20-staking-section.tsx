@@ -19,6 +19,7 @@ import WithdrawalTimer from '../erc20-staking/claimNewTimer';
 import { sepolia } from 'thirdweb/chains';
 import { client } from '@/app/client';
 import { parse } from 'path';
+import ClaimTimer from './claimTimer';
 
 function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   const account = useActiveAccount();
@@ -199,7 +200,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
         });
       }
     }
-  }, []);
+  }, [userDetails]);
 
   return (
     <div style={{ width: '100%', margin: '20px 0' }}>
@@ -291,7 +292,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           </div>
         )}
 
-        {isClaimable?.claimable && (
+        {parseFloat(stakBalance) > 0 && isClaimable?.claimable && (
           <div
             style={{
               width: '100%',
@@ -306,24 +307,22 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           >
             {
               <>
-                {true && (
-                  <WithdrawalTimer
-                    finalTimestamp={parseInt(`${isClaimable?.time}`) || 0}
-                    // finalTimestamp={1743769242 * 1000}
-                    updateFn={() => {
-                      console.log('refresh the data claim btn');
-                      // setUpdateState((state) => (state = !state));
-                      setIsClaimable({
-                        claimable: false,
-                        time: 0,
-                      });
-                      setTimeout(() => {
-                        updateUnstakeButton();
-                      }, 2000);
-                      refreshClaimBtn();
-                    }}
-                  />
-                )}
+                <ClaimTimer
+                  finalTimestamp={parseInt(`${isClaimable?.time}`) || 0}
+                  // finalTimestamp={1743769242 * 1000}
+                  updateFn={() => {
+                    console.log('refresh the data claim btn');
+                    // setUpdateState((state) => (state = !state));
+                    setIsClaimable({
+                      claimable: false,
+                      time: 0,
+                    });
+                    setTimeout(() => {
+                      updateUnstakeButton();
+                    }, 2000);
+                    refreshClaimBtn();
+                  }}
+                />
               </>
             }
           </div>
@@ -349,7 +348,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
                 // wait for the transaction to be claimed
 
                 const getClaimTime = new Date().getTime();
-                const intervalTime = 60 * 1000;
+                const intervalTime = 1 * 60 * 60 * 1000;
                 const totalTime = getClaimTime + intervalTime;
                 window.localStorage.setItem('claimTime', totalTime?.toString()); // Store the claim time
                 setIsClaimable({
