@@ -61,7 +61,6 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   const [stakBalance, setStakBalance] = useState<string>('0');
   const [unstakeWindow, setUnStakeWindow] = useState<number>(0);
   const [isUnstake, setIsUnstake] = useState<boolean>(false);
-  const [claimTime, setClaimTime] = useState<number>(0);
   const [isUserClaimed, setUserClaimed] = useState<boolean>(false);
   const [rewardpoints, setRewardPoints] = useState<any>('0');
   const [unstackDisabled, setUnstackDisabled] = useState<boolean>(false);
@@ -92,18 +91,6 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
 
       if (currentTime > time) {
         setIsUnstake(true);
-      }
-    }
-  }, [userDetails]);
-
-  useEffect(() => {
-    if (userDetails) {
-      console.log({ userDetails });
-      const time = parseInt(`${userDetails?.[2]}` || '0');
-      const lastClaim = parseInt(`${userDetails?.[4]}` || '0');
-      const currentTime = Date.now() / 1000;
-      if (lastClaim) {
-        setClaimTime(lastClaim + 60);
       }
     }
   }, [userDetails]);
