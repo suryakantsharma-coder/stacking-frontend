@@ -11,13 +11,14 @@ import {
   ERC20_ENDLESS_STAKING_CONTRACT,
 } from '../../../utils/contracts';
 import { useEffect, useState } from 'react';
-import { formatEther, formatUnits } from 'ethers';
+import { formatEther, formatUnits, isCallException } from 'ethers';
 import { prepareContractCall } from 'thirdweb';
 import Countdown from 'react-countdown';
 import { toast } from 'react-toastify';
 import WithdrawalTimer from '../erc20-staking/claimNewTimer';
 import { sepolia } from 'thirdweb/chains';
 import { client } from '@/app/client';
+import { parse } from 'path';
 
 function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   const account = useActiveAccount();
@@ -59,13 +60,15 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
   const [stakBalance, setStakBalance] = useState<string>('0');
   const [unstakeWindow, setUnStakeWindow] = useState<number>(0);
   const [isUnstake, setIsUnstake] = useState<boolean>(false);
-  const [isUnstakable, setIsUnstakable] = useState<boolean>(false);
   const [claimTime, setClaimTime] = useState<number>(0);
   const [isUserClaimed, setUserClaimed] = useState<boolean>(false);
   const [rewardpoints, setRewardPoints] = useState<any>('0');
   const [unstackDisabled, setUnstackDisabled] = useState<boolean>(false);
-  const [updatedState, setUpdateState] = useState<boolean>(false);
   const [tempTimeStamp, setTempTimeStamp] = useState<number>(0);
+  const [isClaimable, setIsClaimable] = useState({
+    claimable: false,
+    time: 0,
+  });
 
   // store claims
 
@@ -116,9 +119,6 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
         const upcomingClaim = parseInt(`${lastTimeStack}`) + 60;
         console.log({ upcomingClaim });
         localStorage.setItem('userRewardUpcomingTime', `${upcomingClaim}`);
-        // setClaimTime(parseInt(`${upcomingClaim}`));
-      } else {
-        // setClaimTime(0);
       }
     }
   }, [isUserClaimed, stakBalance]);
@@ -144,45 +144,6 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
       setTimeout(() => {
         setUnstackDisabled(true);
       }, 1000);
-      // if (isClaim) {
-      //   setUserClaimed(false);
-      // } else {
-      //   setIsUnstakable(false);
-      // }
-      // Render a completed state
-      // return (
-      //   <TransactionButton
-      //     transaction={() =>
-      //       prepareContractCall({
-      //         contract: ERC20_STAKING_CONTRACT,
-      //         method: 'UnstackAndRewardClaim',
-      //         params: [],
-      //       })
-      //     }
-      //     onTransactionSent={(result) => {
-      //       console.log('Transaction submitted', result.transactionHash);
-      //     }}
-      //     onTransactionConfirmed={(receipt) => {
-      //       console.log('Transaction confirmed', receipt.transactionHash);
-      //     }}
-      //     onError={(error) => {
-      //       console.error('Transaction error', error);
-      //     }}
-      //     style={{
-      //       width: '100%',
-      //       height: 40,
-      //       cursor: 'pointer',
-      //       backgroundColor: '#FFFFFF',
-      //       color: 'black',
-      //       border: 'none',
-      //       padding: 20,
-      //       marginTop: 20,
-      //     }}
-      //   >
-      //     unstake
-      //   </TransactionButton>
-      // );
-
       return null;
     } else {
       // Render a countdown
@@ -226,6 +187,19 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
       updateUnstakeButton();
     }, 2000);
   }, [userDetails]);
+
+  useEffect(() => {
+    const getClaimTime = parseInt(localStorage.getItem('claimTime') || '0') || 0;
+    if (getClaimTime > 0) {
+      const getCurrentTime = new Date().getTime();
+      if (getCurrentTime < getClaimTime) {
+        setIsClaimable({
+          claimable: true,
+          time: getClaimTime,
+        });
+      }
+    }
+  }, []);
 
   return (
     <div style={{ width: '100%', margin: '20px 0' }}>
@@ -293,29 +267,31 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
             11.1% 🚀
           </p>
         </div> */}
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingTop: 10,
-            paddingBottom: 10,
-            marginBottom: 20,
-          }}
-        >
-          <p>$T3P Rewards to Claim : </p>
-          <p
+        {isUserClaim && (
+          <div
             style={{
-              color: '#32CD32',
-              fontWeight: 'bold',
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: 10,
+              paddingBottom: 10,
+              marginBottom: 20,
             }}
           >
-            {parseFloat(rewardpoints)?.toFixed(2) || 0} 🚀
-          </p>
-        </div>
+            <p>$T3P Rewards to Claim : </p>
+            <p
+              style={{
+                color: '#32CD32',
+                fontWeight: 'bold',
+              }}
+            >
+              {parseFloat(formatEther(`${isUserClaim?.[1]}` || 0))?.toFixed(4) || 0} 🚀
+            </p>
+          </div>
+        )}
 
-        {parseInt(`${userDetails?.[2]}` || '0') > parseInt(`${new Date().getTime() / 1000}`) && (
+        {isClaimable?.claimable && (
           <div
             style={{
               width: '100%',
@@ -330,13 +306,17 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           >
             {
               <>
-                {unstackDisabled && (
+                {true && (
                   <WithdrawalTimer
-                    finalTimestamp={(parseInt(`${userDetails?.[2]}`) || 0) * 1000}
+                    finalTimestamp={parseInt(`${isClaimable?.time}`) || 0}
                     // finalTimestamp={1743769242 * 1000}
                     updateFn={() => {
                       console.log('refresh the data claim btn');
                       // setUpdateState((state) => (state = !state));
+                      setIsClaimable({
+                        claimable: false,
+                        time: 0,
+                      });
                       setTimeout(() => {
                         updateUnstakeButton();
                       }, 2000);
@@ -365,12 +345,34 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
               onTransactionConfirmed={(receipt) => {
                 toast.success('Reward Claimed');
                 console.log('Transaction confirmed', receipt.transactionHash);
+
+                // wait for the transaction to be claimed
+
+                const getClaimTime = new Date().getTime();
+                const intervalTime = 60 * 1000;
+                const totalTime = getClaimTime + intervalTime;
+                window.localStorage.setItem('claimTime', totalTime?.toString()); // Store the claim time
+                setIsClaimable({
+                  claimable: true,
+                  time: totalTime,
+                });
+
                 refreshUserDetails();
                 setUserClaimed(true);
               }}
               onError={(error) => {
                 toast.error(error.message || 'Reward Failed to Claimed');
                 console.error('Transaction error', error);
+
+                // calcualte the next claim time
+                // const getClaimTime = new Date().getTime();
+                // const intervalTime = 60 * 1000;
+                // const totalTime = getClaimTime + intervalTime;
+                // window.localStorage.setItem('claimTime', totalTime?.toString()); // Store the claim time
+                // setIsClaimable({
+                //   claimable: true,
+                //   time: totalTime,
+                // });
               }}
               style={{
                 width: '100%',
@@ -380,50 +382,14 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
                 color: 'black',
                 border: 'none',
                 padding: 20,
-                opacity: isUserClaim?.[0] ? 1 : 0.5,
+                opacity: !isClaimable?.claimable ? 1 : 0.5,
               }}
-              disabled={!isUserClaim?.[0]}
+              disabled={isClaimable?.claimable}
             >
               Claim Rewards
             </TransactionButton>
           </>
         )}
-
-        {unstakeWindow > new Date().getTime() / 1000 && !unstackDisabled && (
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 30,
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            }}
-          >
-            {' '}
-            <Countdown date={claimTime * 1000} renderer={renderer} />{' '}
-          </div>
-        )}
-
-        {unstakeWindow > new Date().getTime() / 1000 && unstackDisabled && (
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 30,
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            }}
-          >
-            {' '}
-            <Countdown date={parseInt(`${userDetails?.[2]}`) * 1000} renderer={renderer} />{' '}
-          </div>
-        )}
-
-        {/* temperaroy timer */}
 
         {!userDetails && (
           <div
@@ -445,7 +411,7 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
           </div>
         )}
 
-        {parseFloat(stakBalance) > 0 ? (
+        {parseFloat(stakBalance) > 0 && (
           <TransactionButton
             transaction={() =>
               prepareContractCall({
@@ -477,41 +443,6 @@ function Erc20StakingSection({ setIsStakeing }: { setIsStakeing: any }) {
               opacity: !unstackDisabled ? 1 : 0.5,
             }}
             disabled={unstackDisabled}
-          >
-            Unstake
-          </TransactionButton>
-        ) : (
-          <TransactionButton
-            transaction={() =>
-              prepareContractCall({
-                contract: ERC20_ENDLESS_STAKING_CONTRACT,
-                method: 'unstake',
-                params: [],
-              })
-            }
-            onTransactionSent={(result) => {
-              console.log('Transaction submitted', result.transactionHash);
-            }}
-            onTransactionConfirmed={(receipt) => {
-              toast.success('Tokens Unstaked');
-              console.log('Transaction confirmed', receipt.transactionHash);
-            }}
-            onError={(error) => {
-              toast.error(error.message || 'Transaction Failed');
-              console.error('Transaction error', error);
-            }}
-            style={{
-              width: '100%',
-              height: 40,
-              cursor: 'pointer',
-              backgroundColor: '#FFFFFF',
-              color: 'black',
-              border: 'none',
-              padding: 20,
-              marginTop: 10,
-              opacity: 0.5,
-            }}
-            disabled={true}
           >
             Unstake
           </TransactionButton>
